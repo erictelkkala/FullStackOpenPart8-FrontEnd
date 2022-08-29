@@ -1,17 +1,32 @@
 import React, { useState } from "react"
 import { EDIT_AUTHOR, GET_AUTHORS } from "../database/queries"
 import { useMutation } from "@apollo/client"
+import Select from "react-select"
 
-const EditAuthor = () => {
-    const [name, setName] = useState("")
+const EditAuthor = (props) => {
+    const [name, setName] = useState(null)
     const [born, setBorn] = useState("")
+    const options = [
+        // eslint-disable-next-line react/prop-types
+        ...props.authors.map((author) => ({
+            value: author.name,
+            label: author.name,
+        })),
+    ]
+
     // Mutation query and refetch authors after the update
     const [editAuthor] = useMutation(EDIT_AUTHOR, {
         refetchQueries: [{ query: GET_AUTHORS }],
     })
 
+    // Custom handler to update the author, since the selected option is an object
+    const handleChange = (selectedOption) => {
+        setName(selectedOption.value)
+    }
+
     const handleSubmit = async (event) => {
         event.preventDefault()
+        console.log(name)
         await editAuthor({ variables: { name, setBornTo: parseInt(born) } })
         // Reset the form
         setName("")
@@ -23,14 +38,15 @@ const EditAuthor = () => {
             <h2>Edit author</h2>
             <form onSubmit={handleSubmit}>
                 <div>
-                    name
-                    <input
-                        value={name}
-                        onChange={({ target }) => setName(target.value)}
-                    ></input>
+                    Name
+                    <Select
+                        defaultValue={name}
+                        onChange={handleChange}
+                        options={options}
+                    />
                 </div>
                 <div>
-                    born
+                    Born
                     <input
                         type="number"
                         value={born}

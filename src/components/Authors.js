@@ -42,7 +42,7 @@ const Authors = (props) => {
                     </tbody>
                 </table>
                 {/* Import the editing form so it only shows up on this author page */}
-                <EditAuthor />
+                <EditAuthor authors={data.allAuthors} />
             </div>
         )
     }
