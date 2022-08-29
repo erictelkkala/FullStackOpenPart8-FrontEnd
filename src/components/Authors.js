@@ -1,17 +1,8 @@
-import { gql, useQuery } from "@apollo/client"
+import { useQuery } from "@apollo/client"
 import React from "react"
+import { GET_AUTHORS } from "../database/queries"
 
 const Authors = (props) => {
-    const GET_AUTHORS = gql`
-        query {
-            allAuthors {
-                name
-                born
-                bookCountByAuthor
-            }
-        }
-    `
-
     // Get the states of the query and assign them to variables
     const { loading, error, data } = useQuery(GET_AUTHORS)
 
@@ -23,7 +14,7 @@ const Authors = (props) => {
 
     // Loading and error messages
     if (loading) {
-        return <div>loading...</div>
+        return <div>Submitting</div>
     } else if (error) {
         return <div>error</div>
 
