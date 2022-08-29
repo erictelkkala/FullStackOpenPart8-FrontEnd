@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client"
 import React from "react"
 import { GET_AUTHORS } from "../database/queries"
+import EditAuthor from "./EditAuthorForm"
 
 const Authors = (props) => {
     // Get the states of the query and assign them to variables
@@ -20,10 +21,10 @@ const Authors = (props) => {
 
         // Show the table if there are authors
     } else {
-        console.log("authors", data)
+        console.log("authors:", data)
         return (
             <div>
-                <h2>authors</h2>
+                <h2>Authors</h2>
                 <table>
                     <tbody>
                         <tr>
@@ -40,6 +41,8 @@ const Authors = (props) => {
                         ))}
                     </tbody>
                 </table>
+                {/* Import the editing form so it only shows up on this author page */}
+                <EditAuthor />
             </div>
         )
     }
