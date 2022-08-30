@@ -34,12 +34,15 @@ export const GET_BOOKS = gql`
     query {
         allBooks {
             title
-            author {
-                name
-                _id
-            }
             published
-        }
+            author {
+              name
+              born
+              _id
+            }
+            _id
+            genres
+          }
     }
 `
 export const EDIT_AUTHOR = gql`
