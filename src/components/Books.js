@@ -6,22 +6,25 @@ const Books = (props) => {
     // Get the states of the query and assign them to variables
     const { loading, error, data } = useQuery(GET_BOOKS)
     // Data element above return an object with an array, so we need to get access to the array with data.allBooks
-    const books = data ? data.allBooks : []
+    const [books, setBooks] = useState([])
     // State for the filtered books
     const [filteredBooks, setFilteredBooks] = useState(books)
     // Get the list of different genres
     const genres = [...new Set(books.map(book => book.genres).flat())]
-    // eslint-disable-next-line no-unused-vars
     const [genre, setGenre] = useState(null)
 
-    // Filter the books based on the genre selected
+    // Set the book state to the data from the query
     useEffect(() => {
-        if (genre === null) {
-            setFilteredBooks(books)
-        } else {
+        setBooks(data ? data.allBooks : [])
+    }, [data])
+
+    // Set the filter when the genre is changed
+    useEffect(() => {
+        if (genre !== null) {
             setFilteredBooks(books.filter(book => book.genres.includes(genre)))
+        } else {
+            setFilteredBooks(books)
         }
-        // Update the filtered books when the genre changes, or the books change
     } , [genre, books])
     
     // eslint-disable-next-line react/prop-types
@@ -36,7 +39,7 @@ const Books = (props) => {
         console.log(error)
         return <div>error</div>
     } else {
-        console.log("Books", books)
+        console.log("Books:", books)
         return (
             <div>
                 <h2>books</h2>

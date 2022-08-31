@@ -7,15 +7,12 @@ const LoginForm = (props) => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
 
-    const [ login, result ] = useMutation(LOGIN, { 
-        // onError: (error) => {
-        //     setError(error.graphQLErrors[0].message)
-        // }
-    })
+    const [ login, result ] = useMutation(LOGIN)
     
     // Check for the token in the result and save it to localstorage if it exists
     useEffect(() => {
         if ( result.data ) {
+            console.log("result:", result)
             const token = result.data.login.value
             props.setToken(token)
             localStorage.setItem("user-token", token)
@@ -32,7 +29,7 @@ const LoginForm = (props) => {
     if (props.show !== true) {
         return null
     }
-    
+
     return (
         <div>
             <form onSubmit={submit}>
