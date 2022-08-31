@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client"
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { GET_BOOKS } from "../database/queries"
 
 const Books = (props) => {
@@ -7,11 +7,28 @@ const Books = (props) => {
     const { loading, error, data } = useQuery(GET_BOOKS)
     // Data element above return an object with an array, so we need to get access to the array with data.allBooks
     const books = data ? data.allBooks : []
+    // State for the filtered books
+    const [filteredBooks, setFilteredBooks] = useState(books)
+    // Get the list of different genres
+    const genres = [...new Set(books.map(book => book.genres).flat())]
+    // eslint-disable-next-line no-unused-vars
+    const [genre, setGenre] = useState(null)
 
+    // Filter the books based on the genre selected
+    useEffect(() => {
+        if (genre === null) {
+            setFilteredBooks(books)
+        } else {
+            setFilteredBooks(books.filter(book => book.genres.includes(genre)))
+        }
+        // Update the filtered books when the genre changes, or the books change
+    } , [genre, books])
+    
     // eslint-disable-next-line react/prop-types
     if (!props.show) {
         return null
     }
+
     // Loading and error messages
     if (loading) {
         return <div>loading...</div>
@@ -23,7 +40,7 @@ const Books = (props) => {
         return (
             <div>
                 <h2>books</h2>
-
+                {genre && <p>In genre: <b>{genre}</b></p>}
                 <table>
                     <tbody>
                         <tr>
@@ -31,7 +48,7 @@ const Books = (props) => {
                             <th>author</th>
                             <th>published</th>
                         </tr>
-                        {books.map((book) => (
+                        {filteredBooks.map((book) => (
                             <tr key={book.title}>
                                 <td>{book.title}</td>
                                 {/* book.author is now an object, so need to specify the field to use */}
@@ -41,6 +58,14 @@ const Books = (props) => {
                         ))}
                     </tbody>
                 </table>
+                <div>
+                    {/* Map the genres to buttons */}
+                    {genres.map((genre) => (
+                        <button key={genre} onClick={() => setGenre(genre)}>{genre}</button>
+                    ))}
+                    {/* Reset the filter */}
+                    <button onClick={() => setGenre(null)}>all genres</button>
+                </div>
             </div>
         )
     }
