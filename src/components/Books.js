@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client"
 import React, { useState, useEffect } from "react"
-import { GET_BOOKS } from "../database/queries"
+import { GET_BOOKS, GET_BOOKS_BY_GENRE } from "../database/queries"
 
 const Books = (props) => {
     // Get the states of the query and assign them to variables
@@ -11,7 +11,13 @@ const Books = (props) => {
     const [filteredBooks, setFilteredBooks] = useState(books)
     // Get the list of different genres
     const genres = [...new Set(books.map(book => book.genres).flat())]
-    const [genre, setGenre] = useState(null)
+    const [genre, setGenre] = useState("")
+
+    // eslint-disable-next-line no-unused-vars
+    const { loading: loadingBooks, error: errorBooks, data: dataBook, refetch: refetchBooks } = useQuery(GET_BOOKS_BY_GENRE, {
+        variables: { genre }
+    })
+
 
     // Set the book state to the data from the query
     useEffect(() => {
@@ -20,11 +26,16 @@ const Books = (props) => {
 
     // Set the filter when the genre is changed
     useEffect(() => {
-        if (genre !== null) {
-            setFilteredBooks(books.filter(book => book.genres.includes(genre)))
-        } else {
-            setFilteredBooks(books)
-        }
+        // Define an unnamed async function and call it immediately after
+        (async () => {
+            if (genre !== "") {
+                // Refetch the query, since it gets the variable from a state
+                const { data } = await refetchBooks()
+                setFilteredBooks(data.allBooks)
+            } else {
+                setFilteredBooks(books)
+            }
+        })()
     } , [genre, books])
     
     // eslint-disable-next-line react/prop-types
@@ -33,13 +44,13 @@ const Books = (props) => {
     }
 
     // Loading and error messages
-    if (loading) {
+    if (loading || loadingBooks) {
         return <div>loading...</div>
     } else if (error) {
-        console.log(error)
+        console.log(error || errorBooks)
         return <div>error</div>
     } else {
-        console.log("Books:", books)
+        console.log("Books:", filteredBooks)
         return (
             <div>
                 <h2>books</h2>
@@ -67,7 +78,7 @@ const Books = (props) => {
                         <button key={genre} onClick={() => setGenre(genre)}>{genre}</button>
                     ))}
                     {/* Reset the filter */}
-                    <button onClick={() => setGenre(null)}>all genres</button>
+                    <button onClick={() => setGenre("")}>all genres</button>
                 </div>
             </div>
         )

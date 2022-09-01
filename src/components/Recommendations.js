@@ -1,15 +1,16 @@
 import { useQuery } from "@apollo/client"
 import React from "react"
-import { ME, GET_BOOKS } from "../database/queries"
+import { ME, GET_BOOKS_BY_GENRE } from "../database/queries"
 
 const Recommendations = (props) => {
     // Get the states of the query and assign them to variables
     const { loading, error, data } = useQuery(ME)
     const favoriteGenre = data ? data.me.favoriteGenre : ""
 
-    // Get the states of the query and assign them to variables
-    // eslint-disable-next-line no-unused-vars
-    const { loading: loadingBooks, error: errorBooks, data: dataBook } = useQuery(GET_BOOKS)
+    // Get the books by the favourite genre
+    const { loading: loadingBooks, error: errorBooks, data: dataBook } = useQuery(GET_BOOKS_BY_GENRE, {
+        variables: { genre: favoriteGenre }
+    })
     const books = dataBook ? dataBook.allBooks : []
 
     // State for the filtered books
@@ -21,9 +22,9 @@ const Recommendations = (props) => {
     }
 
     // Loading and error messages
-    if (loading) {
+    if (loading || loadingBooks) {
         return <div>loading...</div>
-    } else if (error) {
+    } else if (error || errorBooks) {
         return <div>error</div>
     } else {
         console.log("Recommendations", favouriteBooks)
