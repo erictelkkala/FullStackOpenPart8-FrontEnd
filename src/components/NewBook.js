@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useMutation } from "@apollo/client"
-import { ADD_BOOK, GET_AUTHORS, GET_BOOKS } from "../database/queries"
+import { ADD_BOOK, GET_AUTHORS, GET_BOOKS, GET_BOOKS_BY_GENRE } from "../database/queries"
 
 const NewBook = (props) => {
     const [title, setTitle] = useState("")
@@ -10,9 +10,10 @@ const NewBook = (props) => {
     const [genres, setGenres] = useState([])
 
     // Get the states of the query and assign them to variables
-    // Then use the refetchQueries to update the data in the component and cache
     const [addBook, { data, loading, error }] = useMutation(ADD_BOOK, {
-        refetchQueries: [{ query: GET_AUTHORS }, { query: GET_BOOKS }],
+        // Then use the refetchQueries to update the data in the component and cache
+        // Also define the genre variable to be en empty string for the GET_BOOKS_BY_GENRE query
+        refetchQueries: [{ query: GET_AUTHORS }, { query: GET_BOOKS }, { query: GET_BOOKS_BY_GENRE, variables: { genre: "" } }],
     })
 
     // eslint-disable-next-line react/prop-types
@@ -32,12 +33,12 @@ const NewBook = (props) => {
                 genres: genres,
             },
         })
+        console.log(data)
         setTitle("")
         setPublished("")
         setAuthor("")
         setGenres([])
         setGenre("")
-        console.log(data)
     }
 
     const addGenre = () => {
